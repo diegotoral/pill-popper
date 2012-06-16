@@ -30,12 +30,24 @@ class PPGame(Mx.Application):
 		self.lives_box = None
 		self.score = 0
 
-		# Maze pause?
+		# Load the logo
+		logo = Clutter.Texture()
+		logo.set_from_file("logo.png")
+		self.window.get_toolbar().add_actor(logo)
 
 		layout = Clutter.BinLayout()
-		#layout.set_alignment(Clutter.BinAlignment.FILL, Clutter.BinAlignment.FILL)
-		self.screen_box = Clutter.Box()
+		layout.x_align = Clutter.BinAlignment.FILL
+		layout.y_align = Clutter.BinAlignment.FILL
 
+		self.screen_box = box = Clutter.Box()
+		self.screen_box.layout_manager = layout
+		box.layout_manager = layout
+
+		# Add menu
+		box.add_actor(self.menu)
+		layout.set_alignment(self.menu, Clutter.BinAlignment.CENTER, Clutter.BinAlignment.CENTER)
+
+		self.window.set_child(box)
 		self.stage.show()
 
 	def create_menu(self):
