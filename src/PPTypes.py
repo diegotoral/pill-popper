@@ -1,0 +1,15 @@
+#!/usr/bin/python
+
+
+PP_EMPTY          = 0
+PP_WALL           = 1
+PP_PILL           = 2
+PP_SUPER_PILL     = 3
+PP_SPAWN_PLAYER   = 4
+PP_BARRIER_ENEMY  = 5
+PP_SPAWN_ENEMY1   = 6
+PP_SPAWN_ENEMY2   = 7
+PP_SPAWN_ENEMY3   = 8
+PP_SPAWN_ENEMY4   = 9
+PP_BARRIER_PLAYER = 10
+PP_SPAWN_BONUS    = 11
