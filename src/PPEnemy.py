@@ -27,6 +27,12 @@ class PPEnemy(PPGuy.PPGuy):
 	def __init__(self):
 		super(PPEnemy, self).__init__()
 
+	def die(self):
+		self.passed_barrier = False
+		self.vulnerable = False
+		self.dead = True
+		self.set_speed(DEFAULT_SPEED / 2)
+		
 	def do_property_get(self, prop):
 		if prop.name == "color":
 			return self.color
@@ -118,5 +124,19 @@ class PPEnemy(PPGuy.PPGuy):
 		return self.vulnerable
 
 	def collide(self, collidee):
-		if not collidee.is_enemy and self.is_vunerable() and not collidee.is_dead() and not self.is_dead()
+		if not collidee.is_enemy and self.is_vunerable() and not collidee.is_dead() and not self.is_dead():
 			self.die()
+
+	def pass_through(self, code):
+		if code == PP_BARRIER_PLAYER:
+			if not self.passed_barrier():
+				return True
+			else:
+				return False
+		elif code == PP_BARRIER_ENEMY:
+			return False
+		else:
+			return PPGuy.pass_through(self, code)
+
+	def decide(self):
+		""" TODO: Finish this method """

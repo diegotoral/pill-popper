@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+import PPGuy
+import PPTypes
+
 from PPUtil import PPColor
 
 from gi.repository import GLib
@@ -56,14 +59,14 @@ class PPMaze(Clutter.Actor):
 	)
 
 	color = GObject.property(
-		type = GObject.TYPE_OBJECT,
-		default = None,
+		type = Clutter.Color,
+		default = PPColor.blue(),
 		flags = GObject.PARAM_READWRITE
 	)
 
 	safe = GObject.property(
-		type = GObject.TYPE_BOOLEAN,
-		default = False,
+		type = GObject.TYPE_INT,
+		default = 0,
 		flags = GObject.PARAM_READWRITE
 	)
 
@@ -74,37 +77,89 @@ class PPMaze(Clutter.Actor):
 	)
 
 	safe_lifetime = GObject.property(
-		type = GObject.TYPE_OBJECT,
+		type = Clutter.Timeline,
 		default = None,
 		flags = GObject.PARAM_READWRITE
 	)
+
+	maze = []
+
+	maze_trace = []
 
 	guys = []
 
 	def __init__(self):
 		Clutter.Actor.__init__(self)
 
-		self.color = PPColor.blue()
-		self.maze_trace = []
-
 		self.set_size(28, 31)
 		self.set_maze(default_maze)
 
+	def do_property_get(self, prop):
+		if prop.name == "width":
+			return self.width
+		elif prop.name == "height":
+			return self.height
+		elif prop.name == "color":
+			return self.color
+		elif prop.name == "safe":
+			return self.safe_lifetime.get_duration() - self.safe_lifetime.get_elapsed_time()
+		else:
+			raise AttributeError, 'unknown property %s' % prop.name
+
+	def do_property_set(self, prop, value):
+		if prop.name == "width":
+			self.set_size(value, self.height)
+		elif prop.name == "height":
+			self.set_size(self.width, value)
+		elif prop.name == "color":
+			self.color = value
+			self.queue_redraw()
+		elif prop.name == "safe":
+			set_safe(value)
+		else:
+			raise AttributeError, 'unknown property %s' % prop.name
+
 	def set_size(self, width, height):
+		""" TODO: Finish this method """
 		if self.width == width and self.height == height:
 			return
+
+		maze_data = []
+		for x in self.maze:
+			maze_data = x
 
 		self.width = width
 		self.height = height
 		self.maze = maze_data
+		self.maze_trace = []
 
-		Clutter.Actor.queue_redraw(maze)
+		self.queue_redraw()
 
 	def set_maze(self, new_maze):
 		self.maze = new_maze
 
+	def set_safe(self, msecs):
+		""" TODO: Finish this method """
+		if self.safe_lifetime is None:
+			self.safe_lifetime = Clutter.Timeline(msecs)
+			self.safe_lifetime.connect("new-frame", new_frame_cb)
+			self.safe_lifetime.connect("completed", completed_cb)
+
+		self.safe_lifetime.set_duration(msecs)
+		self.safe_lifetime.rewind()
+		self.safe_lifetime.start()
+
+	def new_frame_cb(self, msecs):
+		self.queue_redraw()
+
+	def completed_cb(self):
+		self.safe_lifetime = None
+		self.notify("safe")
+
+		self.queue_redraw()
+
 	def paint(self):
-		""" TODO """
+		""" TODO: Finish this method """
 		self.get_size(width, height)
 		tile_width = width / self.width
 		tile_height = height / self.height
@@ -118,16 +173,34 @@ class PPMaze(Clutter.Actor):
 				pill_radius = curve / 2.0
 
 	def map(self):
-		""" TODO """
+		for x in self.guys:
+			x.map()
 
 	def unmap(self):
-		""" TODO """
+		for x in self.guys:
+			x.unmap()
+
+	def find_tile(self, code):
+		""" TODO: Finish this method """
+		for x in self.maze:
+			if x == code:
+				pass # Must return x and y coordinates
 
 	def reset(self):
-		""" TODO """
+		for guy in self.guys:
+			guy.reset()
+
+		if self.safe_lifetime is not None:
+			self.safe_lifetime = None
 
 	def pause(self):
-		""" TODO """
+		self.paused = True
+
+		for guy in self.guys:
+			guy.pause()
+
+		if self.safe_lifetime is not None:
+			self.safe_lifetime.pause()
 
 	def play(self):
 		""" TODO """
