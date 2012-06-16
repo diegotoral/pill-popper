@@ -1,0 +1,27 @@
+
+MxBoxLayout.Menu
+{
+  padding: 12;
+  border-image: url('menu.png') 5;
+  -mx-spacing: 12;
+}
+
+MxBoxLayout#status-bar
+{
+  -mx-spacing: 12;
+}
+
+MxBoxLayout#status-bar MxLabel
+{
+  color: white;
+  font-family: 'monospace';
+}
+
+MxLabel.Game
+{
+  color: white;
+  font-family: 'monospace';
+  font-weight: 'bold';
+  font-size: 20;
+  padding: 20 0 0;
+}
